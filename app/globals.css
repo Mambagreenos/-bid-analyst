@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0c0c0f;
+  --surface: #141417;
+  --surface2: #1a1a1f;
+  --surface3: #222228;
+  --border: #252530;
+  --border2: #32323e;
+  --text: #e6e6ef;
+  --text2: #b0b0be;
+  --muted: #5e5e70;
+  --accent: #f97316;
+  --accent2: #22d3a6;
+  --info: #60a5fa;
+  --coral: #fb7185;
+  --green: #4ade80;
+  --amber: #fbbf24;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+input, textarea, select, button {
+  font-family: inherit;
+}
