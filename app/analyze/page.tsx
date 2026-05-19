@@ -5,6 +5,7 @@ import AnswerCard from '@/components/AnswerCard'
 import { supabase } from '@/lib/supabase'
 
 const ComparisonTable = dynamic(() => import('@/components/ComparisonTable'), { ssr: false })
+const ContractsView  = dynamic(() => import('@/components/ContractsView'),  { ssr: false })
 
 type Answer = {
   query: string
@@ -13,6 +14,7 @@ type Answer = {
   citations: any[]
   gaps_flagged: any[]
   text_summary: string
+  insight?: string | null
   latency_ms: number
   pinned: boolean
   skipped: boolean
@@ -42,6 +44,7 @@ export default function AnalyzePage() {
   const [query, setQuery] = useState('')
   const [answers, setAnswers] = useState<Answer[]>([])
   const [pinnedCount, setPinnedCount] = useState(0)
+  const [leftTab, setLeftTab] = useState<'bids' | 'contracts'>('bids')
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -171,9 +174,27 @@ export default function AnalyzePage() {
 
       {/* Main split */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Left: comparison table */}
+        {/* Left: bid table + contracts */}
         <div style={{ width: '44%', borderRight: '1px solid var(--border)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <ComparisonTable />
+          {/* Tab bar */}
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+            {(['bids', 'contracts'] as const).map(tab => (
+              <button key={tab} onClick={() => setLeftTab(tab)} style={{
+                flex: 1, padding: '10px 0', fontSize: 11, cursor: 'pointer',
+                fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.08em',
+                background: leftTab === tab ? 'var(--surface)' : 'var(--bg)',
+                borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                borderBottom: leftTab === tab ? '2px solid var(--accent)' : '2px solid transparent',
+                color: leftTab === tab ? 'var(--text)' : 'var(--muted)',
+                fontWeight: leftTab === tab ? 600 : 400, transition: 'all 0.15s',
+              }}>
+                {tab === 'bids' ? 'BID DATA' : 'CONTRACTS'}
+              </button>
+            ))}
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            {leftTab === 'bids' ? <ComparisonTable /> : <ContractsView />}
+          </div>
         </div>
 
         {/* Right: chat */}
@@ -241,6 +262,7 @@ export default function AnalyzePage() {
                   content={a.content}
                   citations={a.citations}
                   gaps_flagged={a.gaps_flagged}
+                  insight={a.insight}
                   latency_ms={a.latency_ms}
                   quality={a.quality}
                   onPin={() => pin(i)}

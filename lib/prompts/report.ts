@@ -48,6 +48,7 @@ CRITICAL RULES:
 - chart data: use ONLY numbers from PRE-COMPUTED STATS provided. If a stat shows "—", exclude that vendor from the data array.
 - metrics: pick the 3–5 numbers a CFO would care most about given these specific findings.
 - Never force a recommendation when findings are risk-only or single-vendor.
+- If you include a recommendation section, primary_vendor MUST be a non-empty vendor name. If you cannot name one, omit the section entirely — an empty recommendation is worse than none.
 
 Return valid JSON ONLY — no markdown, no backticks, no prose outside the JSON object:
 {

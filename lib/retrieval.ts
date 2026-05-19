@@ -54,7 +54,8 @@ export async function buildContext(query: string) {
   // For qualitative questions about SLA/contracts, fetch contract text
   const isQualitative = q.includes('sla') || q.includes('penalty') || q.includes('contract')
     || q.includes('escalat') || q.includes('liability') || q.includes('terms')
-    || q.includes('clause') || q.includes('agreement')
+    || q.includes('clause') || q.includes('agreement') || q.includes('risk')
+    || q.includes('risks') || q.includes('concern') || q.includes('issue')
 
   let contractContext: any[] = []
   if (isQualitative) {

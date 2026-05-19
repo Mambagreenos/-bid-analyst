@@ -50,6 +50,24 @@ const SECTION_ACCENT: Record<string, string> = {
   text: '#38383f',
 }
 
+function cleanMetricValue(v: string): string {
+  return v
+    .replace(/\b(\d+)\.0\b/g, '$1')   // 1.0 → 1, 2.0 → 2
+    .replace(/\b1 Days\b/g, '1 Day')  // 1 Days → 1 Day
+}
+
+function isSectionValid(s: ReportSection): boolean {
+  switch (s.type) {
+    case 'recommendation': return !!s.content?.primary_vendor
+    case 'metrics':   return (s.content?.items?.length  ?? 0) > 0
+    case 'chart':     return (s.content?.x_axis?.length ?? 0) > 0
+    case 'risk_list': return (s.content?.items?.length  ?? 0) > 0
+    case 'table':     return (s.content?.headers?.length ?? 0) > 0
+    case 'text':      return !!s.content?.body
+    default:          return false
+  }
+}
+
 // ── Section renderers ──────────────────────────────────────────────
 function SectionContent({ section }: { section: ReportSection }) {
   switch (section.type) {
@@ -67,7 +85,7 @@ function SectionContent({ section }: { section: ReportSection }) {
                   {item.label.toUpperCase()}
                 </div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: c.val, marginBottom: 6, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '-0.01em' }}>
-                  {item.value}
+                  {cleanMetricValue(item.value)}
                 </div>
                 <div style={{ fontSize: 11, color: S.muted, lineHeight: 1.4 }}>{item.sub}</div>
               </div>
@@ -601,7 +619,7 @@ export default function ReportPage() {
               </SectionBlock>
 
               {/* Adaptive sections */}
-              {(report.sections ?? []).filter(s => s?.type).map((section, i) => {
+              {(report.sections ?? []).filter(s => s?.type && isSectionValid(s)).map((section, i) => {
                 const key = `section_${i}`
                 return (
                   <SectionBlock

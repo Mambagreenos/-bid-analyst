@@ -29,6 +29,16 @@ CITATIONS — keep minimal:
 - Citation format: { "vendor": "", "field": "", "lane": "", "value": "" }
 - For contract citations use field = short clause label (e.g. "SLA exclusion zone"), value = the key phrase (under 12 words).
 
+PROACTIVE INSIGHT — always scan the data for one hidden pain point or non-obvious observation beyond what was directly asked. Surface it even if the user didn't ask.
+Good insights expose:
+- A risk hiding inside the apparent best option (e.g. "cheapest vendor has no SLA penalty clause")
+- A cost implication the raw numbers don't show (e.g. "fuel surcharge makes DTDC more expensive above 50kg")
+- A coverage gap that affects this specific lane or vendor
+- A contract clause that changes the recommendation
+- A comparative trap (e.g. "2-day transit has a 48h grace period — effectively 4 days")
+Set insight to null ONLY if the data genuinely has nothing material to flag.
+"insight": "one direct sentence naming the hidden issue and its business consequence"
+
 GUARDRAILS — every response must include a quality field:
 - answers_question: true if response directly addresses what was asked, false if data is insufficient
 - confidence: "high" (all values from data), "medium" (partial data), "low" (guessing or data missing)
@@ -43,6 +53,7 @@ For text:
   "citations": [{ "vendor": "", "field": "", "lane": "", "value": "" }],
   "gaps_flagged": [{ "lane": "", "vendor": "", "reason": "" }],
   "text_summary": "one sentence with the key takeaway and recommended action",
+  "insight": "one sentence flagging a hidden risk or non-obvious implication — or null",
   "quality": { "answers_question": true, "confidence": "high", "warning": "" }
 }
 
@@ -56,6 +67,7 @@ For table:
   "citations": [{ "vendor": "DTDC", "field": "rate_per_kg", "lane": "Bengaluru-Chennai", "value": "18.9" }],
   "gaps_flagged": [],
   "text_summary": "DTDC is cheapest across metro lanes. Recommend DTDC for cost-sensitive lanes, Blue Dart where 1-day transit is required.",
+  "insight": "DTDC's SLA is best-effort only — no penalty clause means zero contractual recourse if delivery fails.",
   "quality": { "answers_question": true, "confidence": "high", "warning": "" }
 }
 
@@ -70,6 +82,7 @@ For chart:
   "citations": [{ "vendor": "DTDC", "field": "rate_per_kg", "lane": "avg across all", "value": "28" }],
   "gaps_flagged": [],
   "text_summary": "DTDC offers the lowest average rate at Rs28/kg. Recommend for cost-focused procurement.",
+  "insight": "Gati is only Rs3/kg more than DTDC but offers 1 fewer transit day — worth considering for time-sensitive lanes.",
   "quality": { "answers_question": true, "confidence": "high", "warning": "" }
 }
 `

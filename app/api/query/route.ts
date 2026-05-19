@@ -54,6 +54,7 @@ export async function POST(req: Request) {
     citations: parsed.citations ?? [],
     gaps_flagged: parsed.gaps_flagged ?? [],
     text_summary: parsed.text_summary ?? '',
+    insight: parsed.insight ?? null,
     quality: parsed.quality ?? { answers_question: true, confidence: 'high', warning: '' },
     latency_ms: latencyMs,
     tokens_used: tokensUsed,

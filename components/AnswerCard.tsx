@@ -12,6 +12,7 @@ type Props = {
   content: any
   citations: Citation[]
   gaps_flagged: Gap[]
+  insight?: string | null
   latency_ms?: number
   quality?: Quality
   onPin: () => void
@@ -44,7 +45,9 @@ function CitationSection({ citations, responseType }: { citations: Citation[], r
   const fieldsReferenced = [...new Set(bidCitations.map(c => c.field).filter(Boolean))]
 
   return (
-    <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 5 }}>
+    <div style={{ marginTop: 14 }}>
+      <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", color: '#334155', letterSpacing: '0.12em', marginBottom: 6 }}>SOURCES</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {bidCitations.length > 0 && (
         isMultiRow && bidCitations.length > 3 ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 10px', background: '#111827', border: '1px solid #1e293b', borderRadius: 5 }}>
@@ -98,6 +101,7 @@ function CitationSection({ citations, responseType }: { citations: Citation[], r
           </div>
         )
       )}
+      </div>
     </div>
   )
 }
@@ -108,7 +112,7 @@ const IMPACT_COLORS: Record<string, { bg: string; border: string; text: string }
   low:    { bg: '#041f0f', border: '#145229', text: '#4ade80' },
 }
 
-export default function AnswerCard({ query, response_type, content, citations, gaps_flagged, latency_ms, quality, onPin, pinned, skipped, onSkip, onSuggestEdits, loading }: Props) {
+export default function AnswerCard({ query, response_type, content, citations, gaps_flagged, insight, latency_ms, quality, onPin, pinned, skipped, onSkip, onSuggestEdits, loading }: Props) {
   const [editMode, setEditMode] = useState(false)
   const [editText, setEditText] = useState('')
 
@@ -240,6 +244,14 @@ export default function AnswerCard({ query, response_type, content, citations, g
               ✗ {g.vendor} · {g.lane}: {g.reason}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Analyst insight */}
+      {insight && (
+        <div style={{ marginTop: 12, display: 'flex', gap: 10, padding: '10px 14px', background: '#0f1a0a', border: '1px solid #1e3a14', borderRadius: 7, borderLeft: '3px solid #22d3a6' }}>
+          <span style={{ fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", color: '#22d3a6', letterSpacing: '0.1em', flexShrink: 0, paddingTop: 1 }}>↗ INSIGHT</span>
+          <span style={{ fontSize: 12, color: '#86efac', lineHeight: 1.65 }}>{insight}</span>
         </div>
       )}
 
