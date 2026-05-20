@@ -227,17 +227,20 @@ function SectionBlock({
         </div>
         <button
           onClick={onTogglePDF}
-          title={inPDF ? 'Remove from PDF' : 'Add back to PDF'}
+          title={inPDF ? 'Click to exclude from PDF export' : 'Click to include in PDF export'}
           style={{
-            width: 22, height: 22, borderRadius: '50%', cursor: 'pointer',
-            border: `1.5px solid ${inPDF ? S.green : S.border2}`,
+            padding: '3px 10px', borderRadius: 20, cursor: 'pointer',
+            border: `1px solid ${inPDF ? S.green : S.border2}`,
             background: inPDF ? '#041f0f' : 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', alignItems: 'center', gap: 5,
             transition: 'all 0.2s', flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: inPDF ? 11 : 9, color: inPDF ? S.green : S.muted, lineHeight: 1 }}>
+          <span style={{ fontSize: 10, color: inPDF ? S.green : S.muted, lineHeight: 1 }}>
             {inPDF ? '✓' : '○'}
+          </span>
+          <span style={{ fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", color: inPDF ? S.green : S.muted, letterSpacing: '0.04em' }}>
+            {inPDF ? 'In PDF' : 'Skip'}
           </span>
         </button>
       </div>
@@ -475,7 +478,7 @@ export default function ReportPage() {
           <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: S.accent, fontWeight: 700, letterSpacing: '0.1em' }}>CFO REPORT</span>
           {report && (
             <span style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", color: S.muted }}>
-              {inPDFCount}/{totalSections} in PDF
+              {inPDFCount}/{totalSections} sections in PDF
             </span>
           )}
         </div>
