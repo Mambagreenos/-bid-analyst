@@ -145,7 +145,7 @@ export default function PRDPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 32 }}>
           <Stat value="8–10%" label="Indian 3PL market CAGR" sub="through 2028 (RedSeer)" color={S.green} />
           <Stat value="38%" label="AI in procurement CAGR" sub="globally, accelerating fast" color={S.info} />
-          <Stat value="0" label="Direct competitors" sub="No AI bid analyst exists in Indian logistics today" color={S.amber} />
+          <Stat value="1–2 days" label="vs 2–3 weeks today" sub="The gap we close — adjacent tools exist but none solve India-specific AI reasoning over bid data" color={S.amber} />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 64 }}>
