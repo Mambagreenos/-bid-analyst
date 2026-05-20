@@ -23,13 +23,42 @@ type Answer = {
   quality?: { answers_question: boolean; confidence: string; warning: string }
 }
 
-const SAMPLE_QUESTIONS = [
-  'Compare rates for all vendors on metro lanes',
-  'Rank all vendors by average rate per kg',
-  'Which vendors do not cover Northeast lanes?',
-  'What is Gati rate per kg to Imphal?',
-  'Any contract risks with DTDC?',
-  'Best vendor for Nagpur delivery and any risks',
+const SAMPLE_QUESTIONS: { label: string; prompts: string[] }[] = [
+  {
+    label: 'COMPARE & RANK',
+    prompts: [
+      'Rank all vendors by average rate per kg across all lanes',
+      'Compare metro lane rates and transit days for all vendors',
+    ],
+  },
+  {
+    label: 'EVALUATE',
+    prompts: [
+      'Evaluate all vendors overall',
+      'Which vendor should I choose for Nagpur deliveries?',
+    ],
+  },
+  {
+    label: 'RISKS & CONTRACTS',
+    prompts: [
+      'What are the red flags in DTDC contract terms?',
+      'What does Safexpress say about escalation and penalties?',
+    ],
+  },
+  {
+    label: 'COVERAGE & GAPS',
+    prompts: [
+      'Which vendors do not cover Northeast lanes?',
+      'What is Gati rate per kg to Imphal?',
+    ],
+  },
+  {
+    label: 'WHAT-IF',
+    prompts: [
+      'If I choose DTDC for cost savings, what risks am I taking?',
+      'Best vendor for time-sensitive Mumbai lanes — show rates and SLA',
+    ],
+  },
 ]
 
 function isReportIntent(q: string) {
@@ -220,17 +249,26 @@ export default function AnalyzePage() {
             {answers.length === 0 && (
               <div style={{ paddingTop: 8 }}>
                 <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 4, fontWeight: 500 }}>Ask anything about the vendor bids</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 16 }}>Use the sample questions below or type your own.</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  {SAMPLE_QUESTIONS.map(q => (
-                    <button key={q} onClick={() => submit(q)} style={{
-                      padding: '9px 14px', background: 'var(--surface)', border: '1px solid var(--border)',
-                      borderRadius: 7, color: 'var(--text2)', fontSize: 12, textAlign: 'left', cursor: 'pointer',
-                      transition: 'all 0.15s', lineHeight: 1.4,
-                    }}
-                    onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--text)' }}
-                    onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text2)' }}
-                    >{q}</button>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 18 }}>Click a prompt below or type your own question.</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {SAMPLE_QUESTIONS.map(group => (
+                    <div key={group.label}>
+                      <div style={{ fontSize: 9, fontFamily: "'IBM Plex Mono', monospace", color: 'var(--muted)', letterSpacing: '0.12em', marginBottom: 6 }}>
+                        {group.label}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
+                        {group.prompts.map(q => (
+                          <button key={q} onClick={() => submit(q)} style={{
+                            padding: '9px 12px', background: 'var(--surface)', border: '1px solid var(--border)',
+                            borderRadius: 7, color: 'var(--text2)', fontSize: 11, textAlign: 'left', cursor: 'pointer',
+                            transition: 'all 0.15s', lineHeight: 1.5,
+                          }}
+                          onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--text)' }}
+                          onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text2)' }}
+                          >{q}</button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>

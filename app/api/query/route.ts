@@ -10,7 +10,6 @@ export async function POST(req: Request) {
   }
 
   const start = Date.now()
-  const context = await buildContext(query)
 
   // Build prior context string from last 2 turns
   const priorContext = (history ?? [])
@@ -19,6 +18,10 @@ export async function POST(req: Request) {
       `Q: ${h.query}\nA: ${h.text_summary}`
     )
     .join('\n\n')
+
+  // Pass combined text to retrieval so city/lane from prior query carries into filtering
+  const retrievalText = priorContext ? `${priorContext}\n${query}` : query
+  const context = await buildContext(retrievalText)
 
   const userContent = [
     priorContext ? `Prior conversation context:\n${priorContext}\n\n---\n` : '',
