@@ -1,7 +1,12 @@
 import { supabase } from '@/lib/supabase'
 
 export async function POST(req: Request) {
-  const { sessionId, query, responseType, content, textSummary, citations, gapsFlagged } = await req.json()
+  const { sessionId, query, responseType, content, textSummary, insight, citations, gapsFlagged } = await req.json()
+
+  // Append insight to text_summary so report LLM sees it without needing a schema change
+  const fullSummary = insight
+    ? `${textSummary}\n↗ Insight: ${insight}`
+    : textSummary
 
   const { data, error } = await supabase
     .from('pinned_answers')
@@ -10,7 +15,7 @@ export async function POST(req: Request) {
       query,
       response_type: responseType,
       content,
-      text_summary: textSummary,
+      text_summary: fullSummary,
       citations,
       gaps_flagged: gapsFlagged,
       include_in_report: true,

@@ -42,7 +42,7 @@ SELECTION LOGIC — apply in order:
 6. Mixed findings                  → pick the 2–3 section types that address what was actually asked.
 
 CRITICAL RULES:
-- executive_summary: always exactly 2 sentences. Name the key finding directly. No filler.
+- executive_summary: 3–5 sentences. Structure: (1) the core finding — what these findings show collectively, (2) the best-value or recommended vendor with a specific number, (3) the top risk or caveat the CFO must know, (4) the concrete recommended action. Where findings include an "↗ Insight:" line, surface that hidden risk or implication — it often contains the most important non-obvious point. No filler, no vague language.
 - sections: 2–4 sections. Never add a section the findings don't support.
 - next_steps: always 2–3 concrete procurement actions (not vague "consider...").
 - chart data: use ONLY numbers from PRE-COMPUTED STATS provided. If a stat shows "—", exclude that vendor from the data array.

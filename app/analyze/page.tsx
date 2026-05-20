@@ -162,6 +162,7 @@ export default function AnalyzePage() {
         body: JSON.stringify({
           sessionId, query: a.query, responseType: a.response_type,
           content: a.content, textSummary: a.text_summary,
+          insight: a.insight ?? null,
           citations: a.citations, gapsFlagged: a.gaps_flagged,
         }),
       })
