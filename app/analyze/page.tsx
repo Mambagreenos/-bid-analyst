@@ -190,12 +190,14 @@ export default function AnalyzePage() {
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <a href="/prd" style={{
-            fontSize: 12, color: 'var(--muted)', textDecoration: 'none',
+            fontSize: 12, color: '#60a5fa', textDecoration: 'none',
             fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.04em',
-            transition: 'color 0.15s',
+            padding: '5px 12px', borderRadius: 6,
+            border: '1px solid #1e3a5f', background: '#0f1e35',
+            transition: 'all 0.15s',
           }}
-          onMouseOver={e => (e.currentTarget.style.color = 'var(--text2)')}
-          onMouseOut={e => (e.currentTarget.style.color = 'var(--muted)')}
+          onMouseOver={e => { e.currentTarget.style.background = '#1e3a5f'; e.currentTarget.style.color = '#93c5fd' }}
+          onMouseOut={e => { e.currentTarget.style.background = '#0f1e35'; e.currentTarget.style.color = '#60a5fa' }}
           >
             Product Brief
           </a>
