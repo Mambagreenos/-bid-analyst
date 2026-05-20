@@ -463,7 +463,8 @@ export default function ReportPage() {
   }
 
   const includedCount  = pinned.filter(p => p.include_in_report).length
-  const totalSections  = report ? 1 + (report.sections?.length ?? 0) : 0
+  const hasNextSteps   = (report?.next_steps?.filter(Boolean).length ?? 0) > 0
+  const totalSections  = report ? 1 + (report.sections?.length ?? 0) + (hasNextSteps ? 1 : 0) : 0
   const inPDFCount     = totalSections - excludedKeys.size
   const progressPct    = totalSections > 0 ? (inPDFCount / totalSections) * 100 : 0
 
@@ -656,17 +657,29 @@ export default function ReportPage() {
 
               {/* Next Steps */}
               {report.next_steps?.filter(Boolean).length > 0 && (
-                <section style={{ marginBottom: 32 }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: S.muted, letterSpacing: '0.12em', marginBottom: 12 }}>NEXT STEPS</div>
+                <SectionBlock
+                  title="NEXT STEPS"
+                  accent={S.accent}
+                  inPDF={!excludedKeys.has('next_steps')}
+                  sectionKey="next_steps"
+                  isEditing={false}
+                  editFeedback=""
+                  isLoading={false}
+                  onEditFeedbackChange={() => {}}
+                  onEdit={() => {}}
+                  onEditSubmit={() => {}}
+                  onEditCancel={() => {}}
+                  onTogglePDF={() => togglePDF('next_steps')}
+                >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {report.next_steps.filter(Boolean).map((s, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 14, padding: '14px 18px', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 8, alignItems: 'flex-start' }}>
+                      <div key={i} style={{ display: 'flex', gap: 14, padding: '14px 18px', background: S.surface2, border: `1px solid ${S.border}`, borderRadius: 8, alignItems: 'flex-start' }}>
                         <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 15, color: S.accent, fontWeight: 700, minWidth: 28, flexShrink: 0 }}>{i + 1}.</span>
                         <span style={{ fontSize: 13, color: S.text2, lineHeight: 1.65 }}>{s}</span>
                       </div>
                     ))}
                   </div>
-                </section>
+                </SectionBlock>
               )}
 
             </div>
