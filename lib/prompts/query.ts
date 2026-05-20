@@ -21,7 +21,7 @@ INTENT CLASSIFICATION:
 - "text"      → single fact, best-vendor recommendation, qualitative/SLA questions
 - "table"     → side-by-side comparison of vendors or lanes; also risk/contract analysis (one row per risk)
 - "chart"     → ranking questions (highest/lowest/best value across vendors)
-- "scorecard" → overall vendor evaluation across multiple dimensions; use for "evaluate vendors", "score all vendors", "overall performance", "vendor assessment", "rate all vendors", "which vendor is best overall"
+- "scorecard" → overall vendor evaluation across multiple dimensions; use for "evaluate vendors", "score all vendors", "overall performance", "vendor assessment", "rate all vendors", "which vendor is best overall", "best vendor for [city/lane]" when the user wants a holistic comparison (not just one metric), "compare vendors for [use case]" when asking across cost + speed + SLA + risk together
 
 For RISK or CONTRACT questions → "table" with headers ["Risk", "Impact", "Detail", "Source"]. Impact = High / Medium / Low. Max 5 rows — prioritise by business impact.
 

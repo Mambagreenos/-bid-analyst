@@ -56,7 +56,7 @@ const SAMPLE_QUESTIONS: { label: string; prompts: string[] }[] = [
     label: 'WHAT-IF',
     prompts: [
       'If I choose DTDC for cost savings, what risks am I taking?',
-      'Best vendor for time-sensitive Mumbai lanes — show rates and SLA',
+      'Best vendor for Mumbai time-sensitive lanes — score across cost, speed and SLA',
     ],
   },
 ]
