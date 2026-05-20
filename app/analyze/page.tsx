@@ -188,7 +188,17 @@ export default function AnalyzePage() {
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <a href="/prd" style={{
+            fontSize: 12, color: 'var(--muted)', textDecoration: 'none',
+            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.04em',
+            transition: 'color 0.15s',
+          }}
+          onMouseOver={e => (e.currentTarget.style.color = 'var(--text2)')}
+          onMouseOut={e => (e.currentTarget.style.color = 'var(--muted)')}
+          >
+            Product Brief
+          </a>
           <a href="/report" style={{
             fontSize: 12, color: 'var(--muted)', textDecoration: 'none',
             fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.04em',
