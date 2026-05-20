@@ -220,26 +220,29 @@ function SectionBlock({
 
       {/* Label row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: inPDF ? S.muted : S.border2, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 7 }}>
-          {!inPDF && <span style={{ fontSize: 9, color: S.coral }}>✗</span>}
-          <span>{title}</span>
-          {!inPDF && <span style={{ fontSize: 9, color: S.coral }}> — excluded from PDF</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: inPDF ? S.text2 : S.border2, letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+            {title}
+          </span>
+          {!inPDF && (
+            <span style={{ fontSize: 11, color: S.coral }}>— excluded from PDF</span>
+          )}
         </div>
         <button
           onClick={onTogglePDF}
           title={inPDF ? 'Click to exclude from PDF export' : 'Click to include in PDF export'}
           style={{
-            padding: '3px 10px', borderRadius: 20, cursor: 'pointer',
+            padding: '4px 12px', borderRadius: 20, cursor: 'pointer',
             border: `1px solid ${inPDF ? S.green : S.border2}`,
             background: inPDF ? '#041f0f' : 'none',
             display: 'flex', alignItems: 'center', gap: 5,
             transition: 'all 0.2s', flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: 10, color: inPDF ? S.green : S.muted, lineHeight: 1 }}>
+          <span style={{ fontSize: 11, color: inPDF ? S.green : S.muted, lineHeight: 1 }}>
             {inPDF ? '✓' : '○'}
           </span>
-          <span style={{ fontSize: 10, fontFamily: "'IBM Plex Mono', monospace", color: inPDF ? S.green : S.muted, letterSpacing: '0.04em' }}>
+          <span style={{ fontSize: 11, color: inPDF ? S.green : S.muted, letterSpacing: '0.02em' }}>
             {inPDF ? 'In PDF' : 'Skip'}
           </span>
         </button>
@@ -605,9 +608,9 @@ export default function ReportPage() {
 
               {/* Title bar */}
               <div style={{ marginBottom: 40, paddingBottom: 24, borderBottom: `1px solid ${S.border}` }}>
-                <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: S.accent, letterSpacing: '0.12em', marginBottom: 12 }}>VENDOR EVALUATION REPORT</div>
-                <div style={{ fontSize: 26, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.01em' }}>{report.title ?? 'Logistics Bid Analysis'}</div>
-                <div style={{ fontSize: 12, color: S.muted }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: S.accent, letterSpacing: '0.06em', marginBottom: 12, textTransform: 'uppercase' as const }}>Vendor Evaluation Report</div>
+                <div style={{ fontSize: 28, fontWeight: 700, marginBottom: 10, letterSpacing: '-0.01em' }}>{report.title ?? 'Logistics Bid Analysis'}</div>
+                <div style={{ fontSize: 13, color: S.muted }}>
                   Generated {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   &nbsp;·&nbsp;{includedCount} finding{includedCount !== 1 ? 's' : ''} included
                 </div>
