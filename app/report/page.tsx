@@ -205,38 +205,39 @@ function SectionContent({ section }: { section: ReportSection }) {
 
 // ── Section wrapper ────────────────────────────────────────────────
 function SectionBlock({
-  title, accent, reviewed, isEditing, editFeedback, isLoading,
-  onEditFeedbackChange, onEdit, onEditSubmit, onEditCancel, onToggleReviewed,
+  title, accent, inPDF, sectionKey, isEditing, editFeedback, isLoading,
+  onEditFeedbackChange, onEdit, onEditSubmit, onEditCancel, onTogglePDF,
   children,
 }: {
-  title: string; accent: string; reviewed: boolean
+  title: string; accent: string; inPDF: boolean; sectionKey: string
   isEditing: boolean; editFeedback: string; isLoading: boolean
   onEditFeedbackChange: (v: string) => void
   onEdit: () => void; onEditSubmit: () => void; onEditCancel: () => void
-  onToggleReviewed: () => void; children: React.ReactNode
+  onTogglePDF: () => void; children: React.ReactNode
 }) {
   return (
-    <section style={{ marginBottom: 32 }}>
+    <section data-section={sectionKey} style={{ marginBottom: 32, opacity: inPDF ? 1 : 0.45, transition: 'opacity 0.2s' }}>
 
       {/* Label row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: reviewed ? S.green : S.muted, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 7 }}>
-          {reviewed && <span style={{ fontSize: 9 }}>✓</span>}
+        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: inPDF ? S.muted : S.border2, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 7 }}>
+          {!inPDF && <span style={{ fontSize: 9, color: S.coral }}>✗</span>}
           <span>{title}</span>
+          {!inPDF && <span style={{ fontSize: 9, color: S.coral }}> — excluded from PDF</span>}
         </div>
         <button
-          onClick={onToggleReviewed}
-          title={reviewed ? 'Unmark reviewed' : 'Mark reviewed'}
+          onClick={onTogglePDF}
+          title={inPDF ? 'Remove from PDF' : 'Add back to PDF'}
           style={{
             width: 22, height: 22, borderRadius: '50%', cursor: 'pointer',
-            border: `1.5px solid ${reviewed ? S.green : S.border2}`,
-            background: reviewed ? '#041f0f' : 'none',
+            border: `1.5px solid ${inPDF ? S.green : S.border2}`,
+            background: inPDF ? '#041f0f' : 'none',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'all 0.2s', flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: reviewed ? 11 : 9, color: reviewed ? S.green : S.muted, lineHeight: 1 }}>
-            {reviewed ? '✓' : '○'}
+          <span style={{ fontSize: inPDF ? 11 : 9, color: inPDF ? S.green : S.muted, lineHeight: 1 }}>
+            {inPDF ? '✓' : '○'}
           </span>
         </button>
       </div>
@@ -244,10 +245,10 @@ function SectionBlock({
       {/* Content card */}
       <div style={{
         padding: '22px 26px', background: S.surface,
-        borderTop: `1px solid ${reviewed ? '#145229' : S.border}`,
-        borderRight: `1px solid ${reviewed ? '#145229' : S.border}`,
-        borderBottom: `1px solid ${reviewed ? '#145229' : S.border}`,
-        borderLeft: `4px solid ${reviewed ? S.green : accent}`,
+        borderTop: `1px solid ${S.border}`,
+        borderRight: `1px solid ${S.border}`,
+        borderBottom: `1px solid ${S.border}`,
+        borderLeft: `4px solid ${inPDF ? accent : S.border2}`,
         borderRadius: '0 10px 10px 0',
         transition: 'border-color 0.25s',
         position: 'relative',
@@ -341,7 +342,7 @@ export default function ReportPage() {
   const [instructions, setInstructions] = useState('')
   const reportRef = useRef<HTMLDivElement>(null)
 
-  const [reviewedKeys, setReviewedKeys] = useState<Set<string>>(new Set())
+  const [excludedKeys, setExcludedKeys] = useState<Set<string>>(new Set())
   const [editingKey, setEditingKey]     = useState<string | null>(null)
   const [editFeedback, setEditFeedback] = useState('')
   const [loadingKey, setLoadingKey]     = useState<string | null>(null)
@@ -362,8 +363,8 @@ export default function ReportPage() {
     setPinned(prev => prev.map(p => p.id === id ? { ...p, include_in_report: val } : p))
   }
 
-  const toggleReviewed = (key: string) => {
-    setReviewedKeys(prev => {
+  const togglePDF = (key: string) => {
+    setExcludedKeys(prev => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
@@ -377,7 +378,7 @@ export default function ReportPage() {
     setError('')
     setEditingKey(null)
     setEditFeedback('')
-    setReviewedKeys(new Set())
+    setExcludedKeys(new Set())
     try {
       const res = await fetch('/api/report', {
         method: 'POST',
@@ -417,7 +418,6 @@ export default function ReportPage() {
             sections.splice(sectionIdx, 1, ...data.sections)
             return { ...prev, sections }
           })
-          setReviewedKeys(prev => new Set([...prev, key]))
         } else {
           setError(data.error ?? 'Section refinement failed')
         }
@@ -429,7 +429,7 @@ export default function ReportPage() {
           body: JSON.stringify({ sessionId, refineSection: 'executive summary', refineFeedback: feedback }),
         })
         const data = await res.json()
-        if (data.report) { setReport(data.report); setReviewedKeys(new Set(['summary'])) }
+        if (data.report) { setReport(data.report) }
         else setError(data.error ?? 'Refinement failed')
       }
     } catch { setError('Refinement failed') }
@@ -441,9 +441,17 @@ export default function ReportPage() {
 
   const exportPDF = async () => {
     if (!reportRef.current) return
+    // Temporarily hide excluded sections
+    const hiddenEls: HTMLElement[] = []
+    excludedKeys.forEach(key => {
+      const el = reportRef.current?.querySelector(`[data-section="${key}"]`) as HTMLElement | null
+      if (el) { el.style.display = 'none'; hiddenEls.push(el) }
+    })
     const { default: jsPDF }       = await import('jspdf')
     const { default: html2canvas } = await import('html2canvas')
     const canvas = await html2canvas(reportRef.current, { backgroundColor: '#0c0c0f', scale: 2 })
+    // Restore hidden sections
+    hiddenEls.forEach(el => { el.style.display = '' })
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const imgW = 210
     const imgH = (canvas.height * imgW) / canvas.width
@@ -453,8 +461,8 @@ export default function ReportPage() {
 
   const includedCount  = pinned.filter(p => p.include_in_report).length
   const totalSections  = report ? 1 + (report.sections?.length ?? 0) : 0
-  const reviewedCount  = reviewedKeys.size
-  const progressPct    = totalSections > 0 ? (reviewedCount / totalSections) * 100 : 0
+  const inPDFCount     = totalSections - excludedKeys.size
+  const progressPct    = totalSections > 0 ? (inPDFCount / totalSections) * 100 : 0
 
   return (
     <div style={{ minHeight: '100vh', background: S.bg, color: S.text, display: 'flex', flexDirection: 'column' }}>
@@ -467,7 +475,7 @@ export default function ReportPage() {
           <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: S.accent, fontWeight: 700, letterSpacing: '0.1em' }}>CFO REPORT</span>
           {report && (
             <span style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", color: S.muted }}>
-              {reviewedCount}/{totalSections} reviewed
+              {inPDFCount}/{totalSections} in PDF
             </span>
           )}
         </div>
@@ -478,10 +486,10 @@ export default function ReportPage() {
         )}
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar — shows sections included in PDF */}
       {report && (
         <div style={{ height: 3, background: S.border, flexShrink: 0 }}>
-          <div style={{ height: '100%', background: S.accent, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
+          <div style={{ height: '100%', background: S.green, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
         </div>
       )}
 
@@ -605,7 +613,8 @@ export default function ReportPage() {
               <SectionBlock
                 title="EXECUTIVE SUMMARY"
                 accent={S.accent}
-                reviewed={reviewedKeys.has('summary')}
+                inPDF={!excludedKeys.has('summary')}
+                sectionKey="summary"
                 isEditing={editingKey === 'summary'}
                 editFeedback={editingKey === 'summary' ? editFeedback : ''}
                 isLoading={loadingKey === 'summary'}
@@ -613,7 +622,7 @@ export default function ReportPage() {
                 onEdit={() => startEdit('summary')}
                 onEditSubmit={() => submitSectionEdit('summary', null)}
                 onEditCancel={cancelEdit}
-                onToggleReviewed={() => toggleReviewed('summary')}
+                onTogglePDF={() => togglePDF('summary')}
               >
                 <div style={{ fontSize: 14, lineHeight: 1.88, color: S.text }}>{report.executive_summary}</div>
               </SectionBlock>
@@ -626,7 +635,8 @@ export default function ReportPage() {
                     key={key}
                     title={section.title?.toUpperCase() ?? section.type.replace(/_/g, ' ').toUpperCase()}
                     accent={SECTION_ACCENT[section.type] ?? S.muted}
-                    reviewed={reviewedKeys.has(key)}
+                    inPDF={!excludedKeys.has(key)}
+                    sectionKey={key}
                     isEditing={editingKey === key}
                     editFeedback={editingKey === key ? editFeedback : ''}
                     isLoading={loadingKey === key}
@@ -634,7 +644,7 @@ export default function ReportPage() {
                     onEdit={() => startEdit(key)}
                     onEditSubmit={() => submitSectionEdit(key, i)}
                     onEditCancel={cancelEdit}
-                    onToggleReviewed={() => toggleReviewed(key)}
+                    onTogglePDF={() => togglePDF(key)}
                   >
                     <SectionContent section={section} />
                   </SectionBlock>

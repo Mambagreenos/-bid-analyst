@@ -215,6 +215,62 @@ export default function AnswerCard({ query, response_type, content, citations, g
         )
       )}
 
+      {response_type === 'scorecard' && content?.vendors && (() => {
+        const dims: string[] = content.dimensions ?? ['Price', 'Speed', 'Coverage', 'SLA', 'Contract Risk']
+        const vendors: { name: string; scores: number[]; notes?: string[] }[] = content.vendors ?? []
+        return (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px 12px', textAlign: 'left', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'var(--muted)', fontWeight: 500, letterSpacing: '0.05em', minWidth: 120 }}>DIMENSION</th>
+                  {vendors.map(v => (
+                    <th key={v.name} style={{ padding: '8px 12px', textAlign: 'center', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'var(--text)', fontWeight: 700, letterSpacing: '0.04em', minWidth: 100 }}>{v.name}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {dims.map((dim, di) => (
+                  <tr key={dim} style={{ background: di % 2 === 0 ? 'transparent' : 'var(--surface2)' }}>
+                    <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)', color: 'var(--text2)', fontWeight: 500 }}>{dim}</td>
+                    {vendors.map(v => {
+                      const score = v.scores?.[di] ?? 0
+                      const note = v.notes?.[di]
+                      return (
+                        <td key={v.name} style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center', gap: 2, marginBottom: note ? 3 : 0 }}>
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <span key={i} style={{ fontSize: 11, color: i < score ? '#f97316' : '#252530' }}>●</span>
+                            ))}
+                          </div>
+                          {note && <div style={{ fontSize: 10, color: 'var(--muted)', lineHeight: 1.3 }}>{note}</div>}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+                {/* Overall row */}
+                <tr style={{ background: 'var(--surface2)' }}>
+                  <td style={{ padding: '10px 12px', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'var(--muted)', letterSpacing: '0.08em', fontWeight: 700 }}>OVERALL</td>
+                  {vendors.map(v => {
+                    const avg = v.scores?.length ? (v.scores.reduce((a, b) => a + b, 0) / v.scores.length).toFixed(1) : '—'
+                    const best = Math.max(...vendors.map(vv => vv.scores?.reduce((a, b) => a + b, 0) / (vv.scores?.length || 1) || 0))
+                    const myAvg = v.scores?.reduce((a, b) => a + b, 0) / (v.scores?.length || 1) || 0
+                    const isBest = myAvg === best
+                    return (
+                      <td key={v.name} style={{ padding: '10px 12px', textAlign: 'center' }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: isBest ? '#4ade80' : 'var(--text)', fontFamily: "'IBM Plex Mono', monospace" }}>{avg}</span>
+                        <span style={{ fontSize: 10, color: 'var(--muted)' }}>/5</span>
+                      </td>
+                    )
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )
+      })()}
+
       {response_type === 'chart' && content?.x_axis && (
         <div style={{ height: 230 }}>
           <ResponsiveContainer width="100%" height="100%">
