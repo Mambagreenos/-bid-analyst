@@ -11,7 +11,11 @@ export async function buildContext(query: string) {
     'gati': 'Gati',
     'dtdc': 'DTDC',
   }
-  const mentionedVendor = Object.entries(vendorMap).find(([k]) => q.includes(k))?.[1] ?? null
+  // Collect ALL mentioned vendors — if multiple, don't collapse to one
+  const mentionedVendors = [...new Set(
+    Object.entries(vendorMap).filter(([k]) => q.includes(k)).map(([, v]) => v)
+  )]
+  const mentionedVendor = mentionedVendors.length === 1 ? mentionedVendors[0] : null
 
   const zoneKeywords: Record<string, string> = {
     northeast: 'northeast', 'north east': 'northeast', 'ne ': 'northeast',
@@ -28,7 +32,8 @@ export async function buildContext(query: string) {
     'kochi','chandigarh','nagpur','surat','vadodara','coimbatore','vizag',
     'visakhapatnam','dehradun','ranchi','bhopal','indore','amritsar',
   ]
-  const mentionedCity = cities.find(c => q.includes(c)) ?? null
+  // Allow 1-char typo at end of city name (e.g. "agartal" → "agartala")
+  const mentionedCity = cities.find(c => q.includes(c) || (c.length > 5 && q.includes(c.slice(0, -1)))) ?? null
 
   // Broad analytical queries need all 150 rows — skip filtering
   const isBroadQuery = q.includes('all lane') || q.includes('all vendor') || q.includes('all 30') ||
@@ -47,6 +52,7 @@ export async function buildContext(query: string) {
 
   if (!isBroadQuery) {
     if (mentionedVendor) filtered = filtered.filter(r => r.vendor === mentionedVendor)
+    else if (mentionedVendors.length > 1) filtered = filtered.filter(r => mentionedVendors.includes(r.vendor))
     if (mentionedZone) filtered = filtered.filter(r => r.zone === mentionedZone)
     if (mentionedCity) filtered = filtered.filter(r => r.destination_city?.toLowerCase() === mentionedCity)
   }
